@@ -43,7 +43,18 @@ def read_corpus(category="crude"):
 # reuters_corpus = read_corpus()
 # pprint.pprint(reuters_corpus[:3], compact=True, width=100)
 
-def distinct_word(corpus):
+# check for real word except for ' in a word
+# ' can only occur once
+# length of word > 1
+# other symbols not present in the work e.g , ? / > < \ ] 
+def validAppostrophy(word):
+    if (word.find("'") != -1):
+        tempword = word.replace("'", '')
+        if (len(word) > 1 and word.count("'") == 1 and tempword.isalpha()):
+            return True
+    return False
+
+def distinct_words(corpus):
     """ Determine a list of distinct words for the corpus.
         Params:
             corpus (list of list of strings): corpus of documents
@@ -57,11 +68,13 @@ def distinct_word(corpus):
     # remove words that have numbers in them
     # remove symbols e.g @, ?, /, ., -, =
     # HINT: Regex may help here
-    corpus = [['START'] + [realWord for realWord in list if realWord.isalpha()] + ['END'] for list in corpus]
+    corpus = [['START'] + [realWord for realWord in list if realWord.isalpha() or validAppostrophy(realWord)] + ['END'] for list in corpus]
     
-#     #append the start and end token to each list of sentences
-#     for index in range(len(corpus)):
-#         corpus[index] = ['START'] + corpus[index] + ['END']
+#     tempCorpus = []
+#     for wordList in corpus:
+#         corpus = wordList + tempCorpus
+        
+#     corpus = list(corpus)
         
     temp_words = set()
     for sentence in corpus:
@@ -71,3 +84,29 @@ def distinct_word(corpus):
     num_corpus_words = len(corpus_words)
     
     return corpus_words, num_corpus_words
+
+
+    # ---------------------
+# Run this sanity check
+# Note that this not an exhaustive check for correctness.
+# ---------------------
+
+# Define toy corpus
+test_corpus = ["START All that glitters isn't gold ' END".split(" "), "START All's well that ends well END".split(" ")]
+test_corpus_words, num_corpus_words = distinct_words(test_corpus)
+print(test_corpus_words, num_corpus_words)
+
+# Correct answers
+ans_test_corpus_words = sorted(list(set(["START", "All", "ends", "that", "gold", "All's", "glitters", "isn't", "well", "END"])))
+ans_num_corpus_words = len(ans_test_corpus_words)
+
+# Test correct number of words
+assert(num_corpus_words == ans_num_corpus_words), "Incorrect number of distinct words. Correct: {}. Yours: {}".format(ans_num_corpus_words, num_corpus_words)
+
+# Test correct words
+assert (test_corpus_words == ans_test_corpus_words), "Incorrect corpus_words.\nCorrect: {}\nYours:   {}".format(str(ans_test_corpus_words), str(test_corpus_words))
+
+# Print Success
+print ("-" * 80)
+print("Passed All Tests!")
+print ("-" * 80)
