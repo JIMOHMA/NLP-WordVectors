@@ -57,7 +57,12 @@ def distinct_word(corpus):
     # remove words that have numbers in them
     # remove symbols e.g @, ?, /, ., -, =
     # HINT: Regex may help here
+    corpus = [['START'] + [realWord for realWord in list if realWord.isalpha()] + ['END'] for list in corpus]
     
+#     #append the start and end token to each list of sentences
+#     for index in range(len(corpus)):
+#         corpus[index] = ['START'] + corpus[index] + ['END']
+        
     temp_words = set()
     for sentence in corpus:
         for word in sentence:
